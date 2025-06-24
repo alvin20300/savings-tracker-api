@@ -93,6 +93,28 @@ app.delete('/api/v1/goals/:id', auth, async (req, res) => {
   );
   res.json({ message: 'Goal deleted' });
 });
+app.get('/api/v1/goals', auth, async (req, res) => {
+  const userId = req.userId; // retrieved from JWT middleware
+
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM goals WHERE user_id = $1',
+      [userId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch goals' });
+  }
+});
+// 5) List Goals
+// app.get('/api/v1/goals', auth, async (req, res) => {
+//     const { rows } = await pool.query(
+//         `SELECT * FROM goals WHERE user_id=$1 ORDER BY start_date DESC`,
+//         [req.userId]
+//     );
+//     res.json(rows);
+//     });
 
 // 6) Deposit
 app.post('/api/v1/goals/:id/deposits', auth, async (req, res) => {
